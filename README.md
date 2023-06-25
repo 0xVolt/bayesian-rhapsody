@@ -1,6 +1,6 @@
 # Deep Learning for Melody Generation
 
-A repository to design a deep neural network to compose music. Part of the 2023 IBM summer internship.
+A repository with a design for a deep neural network to compose music. Part of the 2023 IBM summer internship.
 
 ## References
 
