@@ -6,3 +6,4 @@ A repository with a design for a deep neural network to compose music. Part of t
 
 1. [Online MIDI Sampler](https://onlinesequencer.net/import) to sample generated MIDI files
 2. [YouTube Series by Valerio Velardo](https://www.youtube.com/watch?v=FLr0r-QhqH0&list=PL-wATfeyAMNr0KMutwtbeDCmpwvtul-Xz) on using LSTMs to analyse melodies as time-series data.
+3. [GitHub Repository](https://github.com/musikalkemist/generating-melodies-with-rnn-lstm/) for the above YouTube series.
