@@ -24,3 +24,4 @@ def preprocess(datasetPath):
     # Encode songs with musical time-series representation
 
     # Save songs to .txt file
+
