@@ -1,4 +1,4 @@
-#DataFlair 
+#DataFlair
 #load all the libraries
 from music21 import *
 import glob
@@ -6,7 +6,7 @@ from tqdm import tqdm
 import numpy as np
 import random
 from tensorflow.keras.layers import LSTM,Dense,Input,Dropout
-from tensorflow.keras.models import Sequential,Model,load_model 
+from tensorflow.keras.models import Sequential,Model,load_model
 from sklearn.model_selection import train_test_split
 
 def read_files(file):
@@ -42,7 +42,7 @@ all_files=glob.glob('All Midi Files/'+file_path[0]+'/*.mid',recursive=True)
 notes_array = np.array([read_files(i) for i in tqdm(all_files,position=0,leave=True)])
 
 #unique notes
-notess = sum(notes_array,[]) 
+notess = sum(notes_array,[])
 unique_notes = list(set(notess))
 print("Unique Notes:",len(unique_notes))
 
@@ -78,11 +78,11 @@ for i in new_notes:
     #output will be the next index after timestep
     inp=i[j:j+timesteps] ; out=i[j+timesteps]
 
-    #append the index value of respective notes 
+    #append the index value of respective notes
     x.append(list(map(lambda x:note2ind[x],inp)))
     y.append(note2ind[out])
 
-x_new=np.array(x) 
+x_new=np.array(x)
 y_new=np.array(y)
 
 #reshape input and output for the model
@@ -114,7 +114,7 @@ EPOCHS = 1
 #train the model on training sets and validate on testing sets
 model.fit(
     x_train,y_train,
-    batch_size=128,epochs=EPOCHS, 
+    batch_size=128,epochs=EPOCHS,
     validation_data=(x_test,y_test))
 
 #save the model for predictions
@@ -132,16 +132,16 @@ out_pred=[] #it will store predicted notes
 #iterate till 200 note is generated
 for i in range(200):
 
-  #reshape the music pattern 
+  #reshape the music pattern
   music_pattern = music_pattern.reshape(1,len(music_pattern),1)
-  
+
   #get the maximum probability value from the predicted output
   pred_index = np.argmax(model.predict(music_pattern))
   #get the note using predicted index and
   #append to the output prediction list
   out_pred.append(ind2note[pred_index])
   music_pattern = np.append(music_pattern,pred_index)
-  
+
   #update the music pattern with one timestep ahead
   music_pattern = music_pattern[1:]
 
@@ -155,26 +155,26 @@ for offset,pattern in enumerate(out_pred):
     for current_note in notes_in_chord:
         i_curr_note=int(current_note)
         #cast the current note to Note object and
-        #append the current note 
+        #append the current note
         new_note = note.Note(i_curr_note)
         new_note.storedInstrument = instrument.Piano()
         notes.append(new_note)
-    
+
     #cast the current note to Chord object
     #offset will be 1 step ahead from the previous note
-    #as it will prevent notes to stack up 
+    #as it will prevent notes to stack up
     new_chord = chord.Chord(notes)
     new_chord.offset = offset
     output_notes.append(new_chord)
-  
+
   else:
-    #cast the pattern to Note object apply the offset and 
+    #cast the pattern to Note object apply the offset and
     #append the note
     new_note = note.Note(pattern)
     new_note.offset = offset
     new_note.storedInstrument = instrument.Piano()
     output_notes.append(new_note)
 
-#save the midi file 
+#save the midi file
 midi_stream = stream.Stream(output_notes)
 midi_stream.write('midi', fp='pred_music.mid')
