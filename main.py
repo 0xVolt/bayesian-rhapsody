@@ -1,4 +1,4 @@
-#load all the libraries
+# Import all the libraries
 from music21 import *
 import glob
 from tqdm import tqdm
