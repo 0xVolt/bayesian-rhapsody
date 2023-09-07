@@ -9,29 +9,31 @@ from tensorflow.keras.models import Sequential, Model, load_model
 from sklearn.model_selection import train_test_split
 
 def read_files(file):
-  notes=[]
-  notes_to_parse=None
-  #parse the midi file
-  midi=converter.parse(file)
-  #seperate all instruments from the file
-  instrmt=instrument.partitionByInstrument(midi)
+	notes = []
+	notes_to_parse = None
 
-  for part in instrmt.parts:
-    #fetch data only of Piano instrument
-    if 'Piano' in str(part):
-      notes_to_parse=part.recurse()
+	# Parse the midi file
+	midi = converter.parse(file)
 
-      #iterate over all the parts of sub stream elements
-      #check if element's type is Note or chord
-      #if it is chord split them into notes
-      for element in notes_to_parse:
-        if type(element)==note.Note:
-          notes.append(str(element.pitch))
-        elif type(element)==chord.Chord:
-          notes.append('.'.join(str(n) for n in element.normalOrder))
+	# Separate all instruments from the file
+	instrument = instrument.partitionByInstrument(midi)
 
-  #return the list of notes
-  return notes
+	for part in instrument.parts:
+	#fetch data only of Piano instrument
+	if 'Piano' in str(part):
+		notes_to_parse=part.recurse()
+
+		#iterate over all the parts of sub stream elements
+		#check if element's type is Note or chord
+		#if it is chord split them into notes
+		for element in notes_to_parse:
+		if type(element)==note.Note:
+			notes.append(str(element.pitch))
+		elif type(element)==chord.Chord:
+			notes.append('.'.join(str(n) for n in element.normalOrder))
+
+	#return the list of notes
+	return notes
 
 #retrieve paths recursively from inside the directories/files
 file_path=["schubert"]
@@ -51,7 +53,7 @@ freq=dict(map(lambda x: (x,notess.count(x)),unique_notes))
 #get the threshold frequency
 print("\nFrequency notes")
 for i in range(30,100,20):
-  print(i,":",len(list(filter(lambda x:x[1]>=i,freq.items()))))
+  	print(i,":",len(list(filter(lambda x:x[1]>=i,freq.items()))))
 
 #filter notes greater than threshold i.e. 50
 freq_notes=dict(filter(lambda x:x[1]>=50,freq.items()))
@@ -72,14 +74,14 @@ timesteps=50
 x=[] ; y=[]
 
 for i in new_notes:
-  for j in range(0,len(i)-timesteps):
-    #input will be the current index + timestep
-    #output will be the next index after timestep
-    inp=i[j:j+timesteps] ; out=i[j+timesteps]
+	for j in range(0,len(i)-timesteps):
+		#input will be the current index + timestep
+		#output will be the next index after timestep
+		inp=i[j:j+timesteps] ; out=i[j+timesteps]
 
-    #append the index value of respective notes
-    x.append(list(map(lambda x:note2ind[x],inp)))
-    y.append(note2ind[out])
+		#append the index value of respective notes
+		x.append(list(map(lambda x:note2ind[x],inp)))
+		y.append(note2ind[out])
 
 x_new=np.array(x)
 y_new=np.array(y)
@@ -112,9 +114,15 @@ EPOCHS = 1
 
 #train the model on training sets and validate on testing sets
 model.fit(
-    x_train,y_train,
-    batch_size=128,epochs=EPOCHS,
-    validation_data=(x_test,y_test))
+    x_train,
+    y_train,
+    batch_size=128,
+    epochs=EPOCHS,
+    validation_data=(
+        x_test,
+        y_test
+    )
+)
 
 #save the model for predictions
 model.save("s2s")
@@ -146,34 +154,36 @@ for i in range(200):
 
 output_notes = []
 for offset,pattern in enumerate(out_pred):
-  #if pattern is a chord instance
-  if ('.' in pattern) or pattern.isdigit():
-    #split notes from the chord
-    notes_in_chord = pattern.split('.')
-    notes = []
-    for current_note in notes_in_chord:
-        i_curr_note=int(current_note)
-        #cast the current note to Note object and
-        #append the current note
-        new_note = note.Note(i_curr_note)
-        new_note.storedInstrument = instrument.Piano()
-        notes.append(new_note)
+	#if pattern is a chord instance
+	if ('.' in pattern) or pattern.isdigit():
+		#split notes from the chord
+		notes_in_chord = pattern.split('.')
+		notes = []
+		for current_note in notes_in_chord:
+			i_curr_note=int(current_note)
+			#cast the current note to Note object and
+			#append the current note
+			new_note = note.Note(i_curr_note)
+			new_note.storedInstrument = instrument.Piano()
+			notes.append(new_note)
 
-    #cast the current note to Chord object
-    #offset will be 1 step ahead from the previous note
-    #as it will prevent notes to stack up
-    new_chord = chord.Chord(notes)
-    new_chord.offset = offset
-    output_notes.append(new_chord)
+		#cast the current note to Chord object
+		#offset will be 1 step ahead from the previous note
+		#as it will prevent notes to stack up
+		new_chord = chord.Chord(notes)
+		new_chord.offset = offset
+		output_notes.append(new_chord)
 
-  else:
-    #cast the pattern to Note object apply the offset and
-    #append the note
-    new_note = note.Note(pattern)
-    new_note.offset = offset
-    new_note.storedInstrument = instrument.Piano()
-    output_notes.append(new_note)
+	else:
+		#cast the pattern to Note object apply the offset and
+		#append the note
+		new_note = note.Note(pattern)
+		new_note.offset = offset
+		new_note.storedInstrument = instrument.Piano()
+		output_notes.append(new_note)
 
-#save the midi file
+
+# Save the midi file
 midi_stream = stream.Stream(output_notes)
-midi_stream.write('midi', fp='pred_music.mid')
+
+midi_stream.write('midi', fp='output.mid')
