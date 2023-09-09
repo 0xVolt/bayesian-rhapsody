@@ -20,17 +20,17 @@ def read_files(file):
 
 	for part in instrument.parts:
 	#fetch data only of Piano instrument
-	if 'Piano' in str(part):
-		notes_to_parse=part.recurse()
+		if 'Piano' in str(part):
+			notes_to_parse=part.recurse()
 
-		#iterate over all the parts of sub stream elements
-		#check if element's type is Note or chord
-		#if it is chord split them into notes
-		for element in notes_to_parse:
-		if type(element)==note.Note:
-			notes.append(str(element.pitch))
-		elif type(element)==chord.Chord:
-			notes.append('.'.join(str(n) for n in element.normalOrder))
+			#iterate over all the parts of sub stream elements
+			#check if element's type is Note or chord
+			#if it is chord split them into notes
+			for element in notes_to_parse:
+				if type(element)==note.Note:
+					notes.append(str(element.pitch))
+				elif type(element)==chord.Chord:
+					notes.append('.'.join(str(n) for n in element.normalOrder))
 
 	#return the list of notes
 	return notes
