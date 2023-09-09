@@ -4,7 +4,7 @@ import glob
 from tqdm import tqdm
 import numpy as np
 import random
-from tensorflow.keras.layers import LSTM,Dense, Input, Dropout
+from tensorflow.keras.layers import LSTM, Dense, Input, Dropout
 from tensorflow.keras.models import Sequential, Model, load_model
 from sklearn.model_selection import train_test_split
 
@@ -92,7 +92,7 @@ y_new = np.reshape(y_new,(-1,1))
 
 #split the input and value into training and testing sets
 #80% for training and 20% for testing sets
-x_train,x_test,y_train,y_test = train_test_split(x_new,y_new,test_size=0.2,random_state=42)
+x_train,x_test,y_train,y_test = train_test_split(x_new, y_new, shuffle=True, test_size=0.3, random_state=42)
 
 #create the model
 model = Sequential()
