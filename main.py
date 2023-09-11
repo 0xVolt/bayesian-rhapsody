@@ -35,11 +35,11 @@ def read_files(file):
 	# Return the list of notes
 	return notes
 
-#retrieve paths recursively from inside the directories/files
-file_path=["schubert"]
-all_files=glob.glob('All Midi Files/'+file_path[0]+'/*.mid',recursive=True)
+# Retrieve paths recursively from inside the directories/files
+file_path = ["schubert"]
+all_files = glob.glob('All Midi Files/'+file_path[0]+'/*.mid',recursive=True)
 
-#reading each midi file
+# Reading each midi file
 notes_array = np.array([read_files(i) for i in tqdm(all_files,position=0,leave=True)])
 
 #unique notes
